@@ -1,0 +1,22 @@
+http:
+  routers:
+    traefik:
+      rule: "Host(`traefik.lb.hygentrade.com`)"
+      entrypoints:
+        - private
+      service: "api@internal"
+      tls:
+        domains:
+          - main: "lb.hygentrade.com"
+            sans:
+              - "*.lb.hygentrade.com"
+tls:
+  certificates:
+    - certFile: "/etc/certs/authinator/server.crt"
+      keyFile: "/etc/certs/authinator/server.key"
+    - certFile: "/etc/certs/security/server.crt"
+      keyFile: "/etc/certs/security/server.key"
+    - certFile: "/etc/certs/hygentrade/server.crt"
+      keyFile: "/etc/certs/hygentrade/server.key"
+    - certFile: "/etc/certs/server.crt"
+      keyFile: "/etc/certs/server.key"

@@ -1,0 +1,42 @@
+services:
+  reverse-proxy:
+    image : traefik:v3.0
+    # Enables the web UI and tell Traefik to listen to docker
+    container_name: main-reverse-proxy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/static.yml:/etc/traefik/traefik.yml:ro
+      # Map the dynamic configuration into the container
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      # Map the certificats into the container
+      - ./certs:/etc/certs:ro
+    command:
+      - "--accesslog=true"
+    networks:
+      - authinator_public
+      - security_public
+      - mainlb_priv
+      - hygentrade_public
+
+networks:
+  authinator_public:
+    external: true
+  security_public:
+    external: true
+  hygentrade_public:
+    external: true
+  mainlb_priv:
+    name: mainlb_priv
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.0.0/28
+
+  
