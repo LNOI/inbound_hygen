@@ -4,8 +4,13 @@ services:
     # Enables the web UI and tell Traefik to listen to docker
     container_name: main-reverse-proxy
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
+    # security_opt:
+    #   - no-new-privileges:true
+    environment: 
+      - TZ
+      - AWS_ACCESS_KEY_ID
+      - AWS_REGION
+      - AWS_SECRET_ACCESS_KEY
     ports:
       - "80:80"
       - "443:443"
@@ -16,7 +21,8 @@ services:
       # Map the dynamic configuration into the container
       - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
       # Map the certificats into the container
-      - ./certs:/etc/certs:ro
+      # - ./certs:/etc/certs:ro
+      - certs:/certs
     command:
       - "--accesslog=true"
     networks:
@@ -24,6 +30,7 @@ services:
       - security_public
       - mainlb_priv
       - hygentrade_public
+  
 
 networks:
   authinator_public:
@@ -39,4 +46,6 @@ networks:
       config:
         - subnet: 10.10.0.0/28
 
-  
+volumes:
+  certs:
+    driver: local

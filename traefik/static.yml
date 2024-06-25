@@ -3,7 +3,7 @@ global:
 
 api:
   dashboard: true
-  insecure: false
+  insecure: true
 
 providers:
   docker:
@@ -11,16 +11,28 @@ providers:
     watch: true
     exposedByDefault: false
     constraints: "Label(`rp-target`,`main-lb`)"
-
-
-  file:
-    filename: /etc/traefik/dynamic.yml
-    watch: true
+  # file:
+  #   filename: /etc/traefik/dynamic.yml
+  #   watch: true
 
 log:
   level: DEBUG
   format: common
 
+certificatesResolvers:
+  route53:
+    acme:
+      email: hygen@hygentrade.com
+      dnsChallenge:
+        provider: route53
+        delayBeforeCheck: 0
+        resolvers:
+          - 1.1.1.1:53
+        # disablePropagationCheck: true
+      storage: /certs/acme.json
+      httpChallenge:
+        # used during the challenge
+        entryPoint: http
 accessLog: {}
 
 entryPoints:
@@ -35,3 +47,5 @@ entryPoints:
     address: ":443"
   private:
     address: ":9443"
+
+
